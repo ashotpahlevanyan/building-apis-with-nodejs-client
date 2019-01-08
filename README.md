@@ -1,6 +1,14 @@
 # building-apis-with-nodejs-client
 
-## To start the application run command
+## To install dependencies, run command
+
+```
+
+npm install
+
+```
+
+## To start the application, run command
 ```
 
 npm start
