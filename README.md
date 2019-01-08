@@ -1,6 +1,8 @@
 # building-apis-with-nodejs-client
 
-```
-npm start # to start the application and go to localhost:3001
+## # start the application with command
+`
+npm start
+`
 
-```
+## and go to [http://localhost:3001](http://localhost:3001)
