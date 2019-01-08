@@ -1,0 +1,24 @@
+{
+  "name": "nodejsapi-web",
+  "version": "1.0.0",
+  "description": "web client for ntask-api",
+  "scripts": {
+    "start": "npm run build && npm run server",
+    "server": "http-server public -p 3001",
+    "build": "browserify src -t babelify -o public/js/app.js"
+  },
+  "keywords": [
+    "es6",
+    "es2015"
+  ],
+  "author": "Ashot Pahlevanyan",
+  "dependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "babelify": "^10.0.0",
+    "browser-request": "^0.3.3",
+    "browserify": "^16.2.3",
+    "http-server": "^0.11.1",
+    "tiny-emitter": "^2.0.2"
+  }
+}
