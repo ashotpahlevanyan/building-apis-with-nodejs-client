@@ -1,14 +1,13 @@
 const renderTasks = tasks => {
 	return tasks.map(task => {
 		let done = task.done ? "ios-checkmark" : "ios-circle-outline";
-		return `
-		<li class="item item-icon-left item-button-right">
+		
+    return `<li class="item item-icon-left item-button-right">
 			<i class="icon ion-${done}" data-done
 				data-task-done="${task.done ? 'done' : ''}"
 				data-task-id="${task.id}"></i>
 			${task.title}
-			<button data-remove data-task-id="${task.id}"
-				class="button buton-assertive">
+			<button data-task-id="${task.id}" class="button button-assertive" data-remove>
 				<i class="ion-trash-a"></i>
 			</button>
 		</li>`;

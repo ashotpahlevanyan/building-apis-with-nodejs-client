@@ -34,7 +34,7 @@ class User extends NTask {
 		const button = this.body.querySelector("[data-remove-account]");
 		button.addEventListener("click", (e) => {
 			e.preventDefault();
-			if(confirm("THis will cancel your account, are you sure?")) {
+			if(confirm("This will cancel your account, are you sure?")) {
 				const opts = {
 					method: "DELETE",
 					url: `${this.URL}/user`,

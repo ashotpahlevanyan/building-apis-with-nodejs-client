@@ -18,7 +18,7 @@ class Menu extends NTask {
 		this.logoutClick();
 	}
 	pathsClick() {
-		const links = this.body.querySelector("[data-path]");
+		const links = this.body.querySelectorAll("[data-path]");
 		for(let i = 0, max = links.length; i < max; i++) {
 			links[i].addEventListener("click", (e) => {
 				e.preventDefault();

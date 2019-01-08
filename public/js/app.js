@@ -565,9 +565,17 @@ module.exports = E;
 },{}],3:[function(require,module,exports){
 "use strict";
 
+var _tasks = _interopRequireDefault(require("./components/tasks.js"));
+
+var _taskForm = _interopRequireDefault(require("./components/taskForm.js"));
+
+var _user = _interopRequireDefault(require("./components/user.js"));
+
 var _signin = _interopRequireDefault(require("./components/signin.js"));
 
 var _signup = _interopRequireDefault(require("./components/signup.js"));
+
+var _menu = _interopRequireDefault(require("./components/menu.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -580,11 +588,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var App =
 /*#__PURE__*/
 function () {
-  function App(body) {
+  function App(body, footer) {
     _classCallCheck(this, App);
 
     this.signin = new _signin.default(body);
     this.signup = new _signup.default(body);
+    this.tasks = new _tasks.default(body);
+    this.taskForm = new _taskForm.default(body);
+    this.user = new _user.default(body);
+    this.menu = new _menu.default(footer);
   }
 
   _createClass(App, [{
@@ -598,6 +610,10 @@ function () {
     value: function addEventListener() {
       this.signinEvents();
       this.signupEvents();
+      this.tasksEvents();
+      this.taskFormEvents();
+      this.userEvents();
+      this.menuEvents();
     }
   }, {
     key: "signinEvents",
@@ -609,7 +625,10 @@ function () {
       });
       this.signin.on("signin", function (token) {
         localStorage.setItem("token", "JWT ".concat(token));
-        alert("You are logged In!");
+
+        _this.menu.render("tasks");
+
+        _this.tasks.render();
       });
       this.signin.on("signup", function () {
         return _this.signup.render();
@@ -624,9 +643,82 @@ function () {
         return alert("Register error");
       });
       this.signup.on("signup", function (user) {
-        alert("".concat(user.name, " you were registered"));
+        alert("".concat(user.name, " you were registered!"));
 
         _this2.signin.render();
+      });
+    }
+  }, {
+    key: "tasksEvents",
+    value: function tasksEvents() {
+      var _this3 = this;
+
+      this.tasks.on("error", function () {
+        return alert("Task list Error");
+      });
+      this.tasks.on("remove-error", function () {
+        return alert("Task delete Error");
+      });
+      this.tasks.on("update-error", function () {
+        return alert("Task update Error");
+      });
+      this.tasks.on("remove", function () {
+        return _this3.tasks.render();
+      });
+      this.tasks.on("update", function () {
+        return _this3.tasks.render();
+      });
+    }
+  }, {
+    key: "taskFormEvents",
+    value: function taskFormEvents() {
+      var _this4 = this;
+
+      this.taskForm.on("error", function () {
+        return alert("Task register error");
+      });
+      this.taskForm.on("submit", function () {
+        _this4.menu.render("tasks");
+
+        _this4.tasks.render();
+      });
+    }
+  }, {
+    key: "userEvents",
+    value: function userEvents() {
+      var _this5 = this;
+
+      this.user.on("error", function () {
+        return alert("User load error");
+      });
+      this.user.on("remove-error", function () {
+        return alert("Cancel account error");
+      });
+      this.user.on("remove-account", function () {
+        alert("So Sad you are leaving us: :(");
+        localStorage.clear();
+
+        _this5.menu.clear();
+
+        _this5.signin.render();
+      });
+    }
+  }, {
+    key: "menuEvents",
+    value: function menuEvents() {
+      var _this6 = this;
+
+      this.menu.on("click", function (path) {
+        _this6.menu.render(path);
+
+        _this6[path].render();
+      });
+      this.menu.on("logout", function () {
+        localStorage.clear();
+
+        _this6.menu.clear();
+
+        _this6.signin.render();
       });
     }
   }]);
@@ -636,7 +728,102 @@ function () {
 
 module.exports = App;
 
-},{"./components/signin.js":4,"./components/signup.js":5}],4:[function(require,module,exports){
+},{"./components/menu.js":4,"./components/signin.js":5,"./components/signup.js":6,"./components/taskForm.js":7,"./components/tasks.js":8,"./components/user.js":9}],4:[function(require,module,exports){
+"use strict";
+
+var _ntask = _interopRequireDefault(require("../ntask.js"));
+
+var _footer = _interopRequireDefault(require("../templates/footer.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var Menu =
+/*#__PURE__*/
+function (_NTask) {
+  _inherits(Menu, _NTask);
+
+  function Menu(body) {
+    var _this;
+
+    _classCallCheck(this, Menu);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Menu).call(this));
+    _this.body = body;
+    return _this;
+  }
+
+  _createClass(Menu, [{
+    key: "render",
+    value: function render(path) {
+      this.body.innerHTML = _footer.default.render(path);
+      this.addEventListener();
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.body.innerHTML = "";
+    }
+  }, {
+    key: "addEventListener",
+    value: function addEventListener() {
+      this.pathsClick();
+      this.logoutClick();
+    }
+  }, {
+    key: "pathsClick",
+    value: function pathsClick() {
+      var _this2 = this;
+
+      var links = this.body.querySelectorAll("[data-path]");
+
+      for (var i = 0, max = links.length; i < max; i++) {
+        links[i].addEventListener("click", function (e) {
+          e.preventDefault();
+          var link = e.target.parentElement;
+          var path = link.getAttribute("data-path");
+
+          _this2.emit("click", path);
+        });
+      }
+    }
+  }, {
+    key: "logoutClick",
+    value: function logoutClick() {
+      var _this3 = this;
+
+      var link = this.body.querySelector("[data-logout]");
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        _this3.emit("logout");
+      });
+    }
+  }]);
+
+  return Menu;
+}(_ntask.default);
+
+module.exports = Menu;
+
+},{"../ntask.js":10,"../templates/footer.js":11}],5:[function(require,module,exports){
 "use strict";
 
 var _ntask = _interopRequireDefault(require("../ntask.js"));
@@ -739,7 +926,7 @@ function (_NTask) {
 
 module.exports = Signin;
 
-},{"../ntask.js":6,"../templates/signin.js":7}],5:[function(require,module,exports){
+},{"../ntask.js":10,"../templates/signin.js":12}],6:[function(require,module,exports){
 "use strict";
 
 var _ntask = _interopRequireDefault(require("../ntask.js"));
@@ -831,7 +1018,359 @@ function (_NTask) {
 
 module.exports = Signup;
 
-},{"../ntask.js":6,"../templates/signup.js":8}],6:[function(require,module,exports){
+},{"../ntask.js":10,"../templates/signup.js":13}],7:[function(require,module,exports){
+"use strict";
+
+var _ntask = _interopRequireDefault(require("../ntask.js"));
+
+var _taskForm = _interopRequireDefault(require("../templates/taskForm.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var TaskForm =
+/*#__PURE__*/
+function (_NTask) {
+  _inherits(TaskForm, _NTask);
+
+  function TaskForm(body) {
+    var _this;
+
+    _classCallCheck(this, TaskForm);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TaskForm).call(this));
+    _this.body = body;
+    return _this;
+  }
+
+  _createClass(TaskForm, [{
+    key: "render",
+    value: function render() {
+      this.body.innerHTML = _taskForm.default.render();
+      this.body.querySelector("[data-task]").focus();
+      this.addEventListener();
+    }
+  }, {
+    key: "addEventListener",
+    value: function addEventListener() {
+      this.formSubmit();
+    }
+  }, {
+    key: "formSubmit",
+    value: function formSubmit() {
+      var _this2 = this;
+
+      var form = this.body.querySelector("form");
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var task = e.target.querySelector("[data-task]");
+        var opts = {
+          method: "POST",
+          url: "".concat(_this2.URL, "/tasks"),
+          json: true,
+          headers: {
+            authorization: localStorage.getItem("token")
+          },
+          body: {
+            title: task.value
+          }
+        };
+
+        _this2.request(opts, function (err, resp, data) {
+          if (err || resp.status === 412) {
+            _this2.emit("error", err);
+          } else {
+            _this2.emit("submit");
+          }
+        });
+      });
+    }
+  }]);
+
+  return TaskForm;
+}(_ntask.default);
+
+module.exports = TaskForm;
+
+},{"../ntask.js":10,"../templates/taskForm.js":14}],8:[function(require,module,exports){
+"use strict";
+
+var _ntask = _interopRequireDefault(require("../ntask.js"));
+
+var _tasks = _interopRequireDefault(require("../templates/tasks.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var Tasks =
+/*#__PURE__*/
+function (_NTask) {
+  _inherits(Tasks, _NTask);
+
+  function Tasks(body) {
+    var _this;
+
+    _classCallCheck(this, Tasks);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tasks).call(this));
+    _this.body = body;
+    return _this;
+  }
+
+  _createClass(Tasks, [{
+    key: "render",
+    value: function render() {
+      this.renderTaskList();
+    }
+  }, {
+    key: "addEventListener",
+    value: function addEventListener() {
+      this.taskDoneCheckbox();
+      this.taskRemoveClick();
+    }
+  }, {
+    key: "renderTaskList",
+    value: function renderTaskList() {
+      var _this2 = this;
+
+      var opts = {
+        method: "GET",
+        url: "".concat(this.URL, "/tasks"),
+        json: true,
+        headers: {
+          authorization: localStorage.getItem("token")
+        }
+      };
+      this.request(opts, function (err, resp, data) {
+        if (err) {
+          _this2.emit("error", err);
+        } else {
+          _this2.body.innerHTML = _tasks.default.render(data);
+
+          _this2.addEventListener();
+
+          console.log("events are added");
+        }
+      });
+    }
+  }, {
+    key: "taskDoneCheckbox",
+    value: function taskDoneCheckbox() {
+      var _this3 = this;
+
+      var dones = this.body.querySelectorAll("[data-done]");
+
+      for (var i = 0, max = dones.length; i < max; i++) {
+        dones[i].addEventListener("click", function (e) {
+          e.preventDefault();
+          var id = e.target.getAttribute("data-task-id");
+          var done = e.target.getAttribute("data-task-done");
+          var opts = {
+            method: "PUT",
+            url: "".concat(_this3.URL, "/tasks/").concat(id),
+            headers: {
+              authorization: localStorage.getItem("token"),
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              done: !done
+            })
+          };
+
+          _this3.request(opts, function (err, resp, data) {
+            if (err || resp.status === 412) {
+              _this3.emit("update-error", err);
+            } else {
+              _this3.emit("update");
+            }
+          });
+        });
+      }
+    }
+  }, {
+    key: "taskRemoveClick",
+    value: function taskRemoveClick() {
+      var _this4 = this;
+
+      var removes = this.body.querySelectorAll("[data-remove]");
+
+      for (var i = 0, max = removes.length; i < max; i++) {
+        removes[i].addEventListener("click", function (e) {
+          e.preventDefault();
+
+          if (confirm("Do you really wanna delete this task?")) {
+            var id = e.target.getAttribute("data-task-id");
+            var opts = {
+              method: "DELETE",
+              url: "".concat(_this4.URL, "/tasks/").concat(id),
+              headers: {
+                authorization: localStorage.getItem("token")
+              }
+            };
+
+            _this4.request(opts, function (err, resp, data) {
+              if (err || resp.status === 412) {
+                _this4.emit("remove-error", err);
+              } else {
+                _this4.emit("remove");
+              }
+            });
+          }
+        });
+      }
+    }
+  }]);
+
+  return Tasks;
+}(_ntask.default);
+
+module.exports = Tasks;
+
+},{"../ntask.js":10,"../templates/tasks.js":15}],9:[function(require,module,exports){
+"use strict";
+
+var _ntask = _interopRequireDefault(require("../ntask.js"));
+
+var _user = _interopRequireDefault(require("../templates/user.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var User =
+/*#__PURE__*/
+function (_NTask) {
+  _inherits(User, _NTask);
+
+  function User(body) {
+    var _this;
+
+    _classCallCheck(this, User);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(User).call(this));
+    _this.body = body;
+    return _this;
+  }
+
+  _createClass(User, [{
+    key: "render",
+    value: function render() {
+      this.renderUserData();
+    }
+  }, {
+    key: "addEventListener",
+    value: function addEventListener() {
+      this.userCancelClick();
+    }
+  }, {
+    key: "renderUserData",
+    value: function renderUserData() {
+      var _this2 = this;
+
+      var opts = {
+        method: "GET",
+        url: "".concat(this.URL, "/user"),
+        json: true,
+        headers: {
+          authorization: localStorage.getItem("token")
+        }
+      };
+      this.request(opts, function (err, resp, data) {
+        if (err || resp.status === 412) {
+          _this2.emit("error", err);
+        } else {
+          _this2.body.innerHTML = _user.default.render(data);
+
+          _this2.addEventListener();
+        }
+      });
+    }
+  }, {
+    key: "userCancelClick",
+    value: function userCancelClick() {
+      var _this3 = this;
+
+      var button = this.body.querySelector("[data-remove-account]");
+      button.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        if (confirm("This will cancel your account, are you sure?")) {
+          var opts = {
+            method: "DELETE",
+            url: "".concat(_this3.URL, "/user"),
+            headers: {
+              authorization: localStorage.getItem("token")
+            }
+          };
+
+          _this3.request(opts, function (err, resp, data) {
+            if (err || resp.status === 412) {
+              _this3.emit("remove-error", err);
+            } else {
+              _this3.emit("remove-account");
+            }
+          });
+        }
+      });
+    }
+  }]);
+
+  return User;
+}(_ntask.default);
+
+module.exports = User;
+
+},{"../ntask.js":10,"../templates/user.js":16}],10:[function(require,module,exports){
 "use strict";
 
 var _tinyEmitter = _interopRequireDefault(require("tiny-emitter"));
@@ -875,21 +1414,63 @@ function (_TinyEmitter) {
 
 module.exports = NTask;
 
-},{"browser-request":1,"tiny-emitter":2}],7:[function(require,module,exports){
+},{"browser-request":1,"tiny-emitter":2}],11:[function(require,module,exports){
+"use strict";
+
+exports.render = function (path) {
+  var isTasks = path === "tasks" ? "active" : "";
+  var isTaskForm = path === "taskForm" ? "active" : "";
+  var isUser = path === "user" ? "active" : "";
+  return "\n\t\t<div class=\"tabs-striped tabs-color-calm\">\n\t\t\t<div class=\"tabs\">\n\t\t\t\t<a data-path=\"tasks\" class=\"tab-item ".concat(isTasks, "\">\n\t\t\t\t\t<i class=\"icon ion-home\"></i>\n\t\t\t\t</a>\n\t\t\t\t<a data-path=\"taskForm\" class=\"tab-item ").concat(isTaskForm, "\">\n\t\t\t\t\t<i class=\"icon ion-compose\"></i>\n\t\t\t\t</a>\n\t\t\t\t<a data-path=\"user\" class=\"tab-item ").concat(isUser, "\">\n\t\t\t\t\t<i class=\"icon ion-person\"></i>\n\t\t\t\t</a>\n\t\t\t\t<a data-logout class=\"tab-item\">\n\t\t\t\t\t<i class=\"icon ion-android-exit\"></i>\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t</div>");
+};
+
+},{}],12:[function(require,module,exports){
 "use strict";
 
 exports.render = function () {
-  return "<form>\n\t\t<div class=\"list\">\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Email</span>\n\t\t\t\t<input type=\"text\" data-email>\n\t\t\t</label>\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Password</span>\n\t\t\t\t<input type=\"password\" data-password>\n\t\t\t</label>\n\t\t</div>\n\t\t<div class=\"padding\">\n\t\t\t<button class=\"button button-positive button-block\">\n\t\t\t\t<i class=\"ion-home\"></i> Login\n\t\t\t</button>\n\t\t</div>\n\t</form>\n\t<div class=\"padding\">\n\t\t<button class=\"button button-block\" data-signup>\n\t\t\t<i class=\"ion-home\"></i> Sign up\n\t\t</button>\n\t</div>";
+  return "<form>\n\t\t<div class=\"list\">\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Email</span>\n\t\t\t\t<input type=\"text\" data-email>\n\t\t\t</label>\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Password</span>\n\t\t\t\t<input type=\"password\" data-password>\n\t\t\t</label>\n\t\t</div>\n\t\t<div class=\"padding\">\n\t\t\t<button class=\"button button-positive button-block\">\n\t\t\t\t<i class=\"ion-home\"></i> Login\n\t\t\t</button>\n\t\t</div>\n\t</form>\n\t<div class=\"padding\">\n\t\t<button class=\"button button-block\" data-signup>\n\t\t\t<i class=\"ion-person-add\"></i> Sign up\n\t\t</button>\n\t</div>";
 };
 
-},{}],8:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 exports.render = function () {
   return "<form>\n\t\t<div class=\"list\">\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Name</span>\n\t\t\t\t<input type=\"text\" data-name>\n\t\t\t</label>\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Email</span>\n\t\t\t\t<input type=\"text\" data-email>\n\t\t\t</label>\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Password</span>\n\t\t\t\t<input type=\"password\" data-password>\n\t\t\t</label>\n\t\t</div>\n\t\t<div class=\"padding\">\n\t\t\t<button class=\"button button-positive button-block\">\n\t\t\t\t<i class=\"ion-thumbsup\"></i> Register\n\t\t\t</button>\n\t\t</div>\n\t</form>";
 };
 
-},{}],9:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
+"use strict";
+
+exports.render = function () {
+  return "<form>\n\t\t<div class=\"list\">\n\t\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t\t<span class=\"input-label\">Task</span>\n\t\t\t\t<input type=\"text\" data-task>\n\t\t\t</label>\n\t\t</div>\n\t\t<div class=\"padding\">\n\t\t\t<button class=\"button button-positive button-block\">\n\t\t\t\t<i class=\"ion-compose\"></i> Add\n\t\t\t</button>\n\t\t</div>\n\t</form>";
+};
+
+},{}],15:[function(require,module,exports){
+"use strict";
+
+var renderTasks = function renderTasks(tasks) {
+  return tasks.map(function (task) {
+    var done = task.done ? "ios-checkmark" : "ios-circle-outline";
+    return "<li class=\"item item-icon-left item-button-right\">\n\t\t\t<i class=\"icon ion-".concat(done, "\" data-done\n\t\t\t\tdata-task-done=\"").concat(task.done ? 'done' : '', "\"\n\t\t\t\tdata-task-id=\"").concat(task.id, "\"></i>\n\t\t\t").concat(task.title, "\n\t\t\t<button data-task-id=\"").concat(task.id, "\" class=\"button button-assertive\" data-remove>\n\t\t\t\t<i class=\"ion-trash-a\"></i>\n\t\t\t</button>\n\t\t</li>");
+  }).join("");
+};
+
+exports.render = function (tasks) {
+  if (tasks && tasks.length) {
+    return "<ul class=\"list\">".concat(renderTasks(tasks), "</ul>");
+  }
+
+  return "<h4 class=\"text-center\">The task list is empty</h4>";
+};
+
+},{}],16:[function(require,module,exports){
+"use strict";
+
+exports.render = function (user) {
+  return "<div class=\"list\">\n\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t<span class=\"input-label\">Name</span>\n\t\t\t<small class=\"dark\">".concat(user.name, "</small>\n\t\t</label>\n\t\t<label class=\"item item-input item-stacked-label\">\n\t\t\t<span class=\"input-label\">Email</span>\n\t\t\t<small class=\"dark\">").concat(user.email, "</small>\n\t\t</label>\n\t</div>\n\t<div class=\"padding\">\n\t\t<button data-remove-account\n\t\t\tclass=\"button button-assertive button-block\">\n\t\t\t<i class=\"ion-trash-a\"></i> Cancel account\n\t\t</button>\n\t</div>");
+};
+
+},{}],17:[function(require,module,exports){
 "use strict";
 
 var _app = _interopRequireDefault(require("./app.js"));
@@ -898,7 +1479,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 window.onload = function () {
   var main = document.querySelector("main");
-  new _app.default(main).init();
+  var footer = document.querySelector("footer");
+  new _app.default(main, footer).init();
 };
 
-},{"./app.js":3}]},{},[9]);
+},{"./app.js":3}]},{},[17]);

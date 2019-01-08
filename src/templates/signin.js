@@ -18,7 +18,7 @@ exports.render = () => {
 	</form>
 	<div class="padding">
 		<button class="button button-block" data-signup>
-			<i class="ion-home"></i> Sign up
+			<i class="ion-person-add"></i> Sign up
 		</button>
 	</div>`;
 };

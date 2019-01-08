@@ -31,6 +31,7 @@ class Tasks extends NTask {
 			} else {
 				this.body.innerHTML = Template.render(data);
 				this.addEventListener();
+				console.log("events are added");
 			}
 		});
 	}
