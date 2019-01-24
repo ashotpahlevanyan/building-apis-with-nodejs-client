@@ -1405,7 +1405,7 @@ function (_TinyEmitter) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(NTask).call(this));
     _this.request = _browserRequest.default;
-    _this.URL = "https://localhost:3000";
+    _this.URL = "https://moversappserver.herokuapp.com";
     return _this;
   }
 

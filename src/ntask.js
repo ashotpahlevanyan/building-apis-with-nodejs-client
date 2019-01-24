@@ -5,7 +5,7 @@ class NTask extends TinyEmitter {
 	constructor() {
 		super();
 		this.request = request;
-		this.URL = "https://localhost:3000";
+		this.URL = "https://moversappserver.herokuapp.com";
 	}
 }
 
